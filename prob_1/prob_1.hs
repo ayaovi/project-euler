@@ -1,0 +1,1 @@
+result = foldl (+) 0 $ filter (\c -> (==) (mod c 3) 0 || (==) (mod c 5) 0) [1..999]
