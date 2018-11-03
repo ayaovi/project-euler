@@ -1,5 +1,5 @@
+-- What is the largest prime factor of the number 600851475143 ?
 prime_factors :: Int -> [Int]
-
 prime_factors n =
   case factors of 
     [] -> [n]
