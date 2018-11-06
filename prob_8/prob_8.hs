@@ -48,9 +48,7 @@ digits = "73167176531330624919225119674426574742355349194934" ++
          "71636269561882670428252483600823257530420752963450";
 
 substring :: String -> (Int, Int) -> String
-substring x (y, z) 
-  | (==) y z = ""
-  | otherwise = (x !! y) : (substring x (y + 1, z))
+substring x (y, z) = take ((-) z y) $ drop y x
 
 poad :: String -> Int -- poad: product of all digits
 poad x = foldl (*) 1 $ map (\x -> digitToInt x) x
