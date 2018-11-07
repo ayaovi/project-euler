@@ -48,9 +48,9 @@ digits = "73167176531330624919225119674426574742355349194934" ++
          "71636269561882670428252483600823257530420752963450";
 
 substring :: String -> (Int, Int) -> String
-substring x (y, z) = take ((-) z y) $ drop y x
+substring xs (i, j) = take ((-) j i) $ drop i xs
 
 poad :: String -> Int -- poad: product of all digits
-poad x = foldl (*) 1 $ map (\x -> digitToInt x) x
+poad xs = foldl (*) 1 $ map (\x -> digitToInt x) xs
 
 result = last $ sort $ map (\x -> poad x) $ map (\x -> substring digits (x, x + 13)) [0..1000 - 13]
