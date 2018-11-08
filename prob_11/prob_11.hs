@@ -51,23 +51,33 @@ grid = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08 " ++
 (|>) = flip ($)
 
 -- x = splitOn " " grid
-x = words grid
+-- x = words grid
 
 all_direction = [63..316] |> filter (\x -> (>) (x `mod` 20) 2 && (<) (x `mod` 20) 17)
-left_only = ([0..42] ++ [340..399]) |> filter (\x -> (<) (x `mod` 20) 3)
-down_only = [0..316] |> filter (\x -> (<) (x `mod` 20) 3 || (>) (x `mod` 20) 16) 
+right_only = ([0..56] ++ [340..396]) |> filter (\x -> (<) (x `mod` 20) 17) -- going right covers left ones.
+down_only = [0..339] |> filter (\x -> (<) (x `mod` 20) 3 || (>) (x `mod` 20) 16) -- going down covers up ones.
 
 quad_all_direction :: [Int] -> [Int] -> [[Int]]
 quad_all_direction xs ys = xs |> map (\x -> [take 4 (drop (x - 3) ys), -- left
                                              take 4 (drop x ys), -- right
-                                             [x, ys !! (x - 20), ys !! (x - 40), ys !! (x - 60)], -- up
-                                             [x, ys !! (x + 20), ys !! (x + 40), ys !! (x + 60)], -- down
-																						 [x, ys !! (x - 21), ys !! (x - 42), ys !! (x - 63)], -- diagonal up-left
-																						 [x, ys !! (x - 19), ys !! (x - 38), ys !! (x - 57)], -- diagonal up-right
-																						 [x, ys !! (x + 19), ys !! (x + 38), ys !! (x + 57)], -- diagonal down-left
-																						 [x, ys !! (x + 21), ys !! (x + 42), ys !! (x + 63)], -- diagonal down-right
-																						]) 
+                                             [ys !! x, ys !! (x - 20), ys !! (x - 40), ys !! (x - 60)], -- up
+                                             [ys !! x, ys !! (x + 20), ys !! (x + 40), ys !! (x + 60)], -- down
+                                             [ys !! x, ys !! (x - 21), ys !! (x - 42), ys !! (x - 63)], -- diagonal up-left
+                                             [ys !! x, ys !! (x - 19), ys !! (x - 38), ys !! (x - 57)], -- diagonal up-right
+                                             [ys !! x, ys !! (x + 19), ys !! (x + 38), ys !! (x + 57)], -- diagonal down-left
+                                             [ys !! x, ys !! (x + 21), ys !! (x + 42), ys !! (x + 63)] -- diagonal down-right
+                                            ]) 
                               |> concat
 
+quad_right_only :: [Int] -> [Int] -> [[Int]]
+quad_right_only xs ys = xs |> map (\x -> take 4 (drop x ys))
+
+quad_down_only :: [Int] -> [Int] -> [[Int]]
+quad_down_only xs ys = xs |> map (\x -> [ys !! x, ys !! (x + 20), ys !! (x + 40), ys !! (x + 60)])
+
 -- result = groupBy (\(x, i) (y, j) -> j > 1 && (/=) (j `mod` 20) 1) $ zip (map (\x -> read x :: Int) x) [1..length x]
-result = x |> map (\x -> read x :: Int)
+x = (words grid) |> map (\x -> read x :: Int)
+
+quads = [quad_all_direction all_direction, quad_right_only right_only, quad_down_only down_only] |> map (\f -> f x) |> concat
+
+result = quads |> map (\xs -> foldl (*) 1 xs) |> maximum
