@@ -24,7 +24,8 @@
 -}
 
 import Data.List
-import Data.List.Split
+-- import Data.Vector as V
+-- import Data.List.Split
 
 grid = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08 " ++
        "49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00 " ++
@@ -46,5 +47,27 @@ grid = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08 " ++
        "20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16 " ++
        "20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54 " ++
        "01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"
-x = splitOn " " grid
-result = groupBy (\(x, i) (y, j) -> j > 1 && (/=) (j `mod` 20) 1) $ zip (map (\x -> read x :: Int) x) [1..length x]
+
+(|>) = flip ($)
+
+-- x = splitOn " " grid
+x = words grid
+
+all_direction = [63..316] |> filter (\x -> (>) (x `mod` 20) 2 && (<) (x `mod` 20) 17)
+left_only = ([0..42] ++ [340..399]) |> filter (\x -> (<) (x `mod` 20) 3)
+down_only = [0..316] |> filter (\x -> (<) (x `mod` 20) 3 || (>) (x `mod` 20) 16) 
+
+quad_all_direction :: [Int] -> [Int] -> [[Int]]
+quad_all_direction xs ys = xs |> map (\x -> [take 4 (drop (x - 3) ys), -- left
+                                             take 4 (drop x ys), -- right
+                                             [x, ys !! (x - 20), ys !! (x - 40), ys !! (x - 60)], -- up
+                                             [x, ys !! (x + 20), ys !! (x + 40), ys !! (x + 60)], -- down
+																						 [x, ys !! (x - 21), ys !! (x - 42), ys !! (x - 63)], -- diagonal up-left
+																						 [x, ys !! (x - 19), ys !! (x - 38), ys !! (x - 57)], -- diagonal up-right
+																						 [x, ys !! (x + 19), ys !! (x + 38), ys !! (x + 57)], -- diagonal down-left
+																						 [x, ys !! (x + 21), ys !! (x + 42), ys !! (x + 63)], -- diagonal down-right
+																						]) 
+                              |> concat
+
+-- result = groupBy (\(x, i) (y, j) -> j > 1 && (/=) (j `mod` 20) 1) $ zip (map (\x -> read x :: Int) x) [1..length x]
+result = x |> map (\x -> read x :: Int)
