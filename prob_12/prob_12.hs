@@ -14,3 +14,19 @@
 
   What is the value of the first triangle number to have over five hundred divisors?
 -}
+
+(|>) = flip ($)
+
+divisors :: Int -> [Int]
+divisors k = divisors' 2 k
+  where
+    divisors' n k | n * n > k = [k]
+                  | n * n == k = [n, k]
+                  | k `mod` n == 0 = (n:(k `div` n):result)
+                  | otherwise = result
+      where result = divisors' (n + 1) k
+
+result = zip [x * (x + 1) `div` 2 | x <- [1..]] [1..] 
+         |> dropWhile (\(a,b) -> (<) (divisors a |> length) 500)
+         |> head 
+         |> fst
