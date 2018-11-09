@@ -1,6 +1,7 @@
 -- Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
-
+{-# LANGUAGE ViewPatterns #-}
 import Data.Char
+import Data.List
 
 str = "37107287533902102798797998220837590246510135740250 " ++
       "46376937677490009712648124896970078050417018260538 " ++
@@ -105,10 +106,22 @@ str = "37107287533902102798797998220837590246510135740250 " ++
 
 (|>) = flip ($)
 
-res = [[digitToInt y | y <- x] | x <- [reverse z | z <- words str]]
+parsed = [[digitToInt y | y <- x] | x <- words str]
 
-canonical_addition :: [[Int]] -> [Int]
-canonical_addition ([]:[]:x) = []
-canonical_addition ((ys:y):(zs:z):x) = [sum (ys : zs : head x)]
+solve d =
+  let p = transpose [[digitToInt y | y <- x] | x <- words d]
 
-x = [[1,2,3],[1,2,3],[1,2,3],[1,2,3]] |> canonical_addition
+      halfAdd (d1, c1) d2 = let r = 10
+                                s = d1 + d2 + c1 * r
+                            in  (s `mod` r, s `div` r)
+      p' = map (foldl halfAdd (0,0)) p
+
+      digit (lv, lc) (rv, rc) = 
+        let (nv, nc) = halfAdd (lv, lc) rc 
+        in ((show nv) ++ rv, nc)
+
+      (acc, rem) = foldr digit ([],0) p'
+  in  show rem ++ acc
+
+result = [read z | z <- words str] |> sum |> show |> take 10
+result' = str |> solve |> take 10
