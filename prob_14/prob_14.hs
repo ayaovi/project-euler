@@ -25,15 +25,10 @@ collatz x
   | even x = x:collatz (x `div` 2)
   | odd x = x:collatz (x * 3 + 1)
 
-collatzr :: Int -> Int -> [Int]  -- generates collatz for every number in the specified range and returns the longest chain.
+collatzr :: Int -> Int -> [Int]  -- gen collatz of every number in range and returns the longest chain.
 collatzr x y = [x..y] |> map (\x -> collatz x) |> maximumBy (\x y -> compare (length x) (length y))
 
-res = s `par` t `par` u `par` v `par` w `par` x `par` y `par` z `pseq` [s, t, u, v, w, x, y, z] |> maximumBy (\x y -> compare (length x) (length y))
-  where s = collatzr 1 125000
-        t = collatzr 125001 250000
-        u = collatzr 250001 375000
-        v = collatzr 375001 500000
-        w = collatzr 500001 625000
-        x = collatzr 625001 750000
-        y = collatzr 750001 875000
-        z = collatzr 875001 1000000
+workers = 8
+bucket = 1000000 / workers -- workerd needs to be a divisor of 1000000
+
+res = [1..workers] |> map (\x -> ((x - 1) * bucket, x * bucket)) |> map (\(x, y) -> collatzr x y) |> map (\x -> x `par` x) |> maximumBy (\x y -> compare (length x) (length y))
