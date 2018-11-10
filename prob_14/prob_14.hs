@@ -14,28 +14,26 @@
 -}
 
 import Data.List
+import Control.Parallel
 
-(\>) = flip ($)
+(|>) = flip ($)
 
 collatz :: Int -> [Int]
-collatz 1 = [1]
 collatz 0 = []
+collatz 1 = [1]
 collatz x 
   | even x = x:collatz (x `div` 2)
   | odd x = x:collatz (x * 3 + 1)
 
-actual = Data.List.sortBy (\a b-> compare (length b) (length a)) $ map collatz [1..100]
+collatzr :: Int -> Int -> [Int]  -- generates collatz for every number in the specified range and returns the longest chain.
+collatzr x y = [x..y] |> map (\x -> collatz x) |> maximumBy (\x y -> compare (length x) (length y))
 
-collatzE f = 2 * f
-collatzO f = (f-1) `div` 3
-
-col = [1] : map (\s -> nub $ filter (\x -> x > 0) $ concat $ map (\x -> [collatzE x, collatzO x]) s) col
-
-col2 :: Int -> [[Int]]
-col2 x = 
-  let evenC = collatzE x
-      oddC = collatzO x
-  -- in if evenC > 1 && oddC > 1 then [x:[evenC], x:[oddC]]
-  -- in filter (\x -> last x > 0) [x:[evenC], x:[oddC]]
-  in map (\a -> (head (col2 a)) ++ [x]) $ filter (>1) [evenC, oddC]
-     
+res = s `par` t `par` u `par` v `par` w `par` x `par` y `par` z `pseq` [s, t, u, v, w, x, y, z] |> maximumBy (\x y -> compare (length x) (length y))
+  where s = collatzr 1 125000
+        t = collatzr 125001 250000
+        u = collatzr 250001 375000
+        v = collatzr 375001 500000
+        w = collatzr 500001 625000
+        x = collatzr 625001 750000
+        y = collatzr 750001 875000
+        z = collatzr 875001 1000000
