@@ -29,6 +29,6 @@ collatzr :: Int -> Int -> [Int]  -- gen collatz of every number in range and ret
 collatzr x y = [x..y] |> map (\x -> collatz x) |> maximumBy (\x y -> compare (length x) (length y))
 
 workers = 8
-bucket = 1000000 / workers -- workerd needs to be a divisor of 1000000
+bucket = 1000000 `div` workers -- workerd needs to be a divisor of 1000000
 
 res = [1..workers] |> map (\x -> ((x - 1) * bucket, x * bucket)) |> map (\(x, y) -> collatzr x y) |> map (\x -> x `par` x) |> maximumBy (\x y -> compare (length x) (length y))
