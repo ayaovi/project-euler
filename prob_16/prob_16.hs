@@ -4,6 +4,7 @@
 -}
 
 import Data.Char
+import Data.List
 
 (|>) = flip ($)
 
@@ -18,37 +19,38 @@ fullMult x y = y' |> map (\(v, w) -> (mult x' v) ++ (replicate w 0))
 fullMult' :: String -> String -> String
 fullMult' x y = y' |> map (\(v, w) -> (mult x' v) ++ (replicate w 0))
                    |> map (\z -> foldr (\v w -> (show v ++ w)) "" z)
-                   |> map (\s -> trim s)
-                   |> pad
-                   |> foldr (\v w -> v ++ " " ++ w) ""
+                   |> map (\s -> trim s '0')
+                   |> flip (pad) '0'
+                   |> add
+                   |> flip (trim) '0'
   where x' = [digitToInt z | z <- x]
         y' = zip [digitToInt z | z <- y] (reverse [0..length y - 1])
 
-pad :: [String] -> [String]
-pad xs = map (\x -> (replicate (ml - length x) '0') ++ x) xs
+pad :: [String] -> Char -> [String]
+pad xs c = map (\x -> (replicate (ml - length x) c) ++ x) xs
   where ml = xs |> map (\x -> length x) |> maximum
 
-trim :: String -> String
-trim "" = ""
-trim (x:xs) 
-  | x == '0' = trim xs
+trim :: String -> Char -> String
+trim "" _ = ""
+trim (x:xs) c 
+  | x == c = trim xs c
   | otherwise = (x:xs)
 
--- add :: String -> String
--- add d =
---   let p = transpose [[digitToInt y | y <- x] | x <- words d]
+add :: [String] -> String
+add d =
+  let p = transpose [[digitToInt y | y <- x] | x <- d]
 
---       halfAdd (d1, c1) d2 = let r = 10
---                                 s = d1 + d2 + c1 * r
---                             in  (s `mod` r, s `div` r)
---       p' = map (foldl halfAdd (0,0)) p
+      halfAdd (d1, c1) d2 = let r = 10
+                                s = d1 + d2 + c1 * r
+                            in  (s `mod` r, s `div` r)
+      p' = map (foldl halfAdd (0, 0)) p
 
---       digit (lv, lc) (rv, rc) = 
---         let (nv, nc) = halfAdd (lv, lc) rc 
---         in ((show nv) ++ rv, nc)
+      digit (lv, lc) (rv, rc) = 
+        let (nv, nc) = halfAdd (lv, lc) rc 
+        in ((show nv) ++ rv, nc)
 
---       (acc, rem) = foldr digit ([],0) p'
---   in  show rem ++ acc
+      (acc, rem) = foldr digit ([], 0) p'
+  in  show rem ++ acc
 
 mult :: [Int] -> Int -> [Int]
 mult x y = (rem:acc)
@@ -63,4 +65,7 @@ halfMult (d1, c1) d2 = (s `mod` r, s `div` r)
   where s = d1 * d2 + c1
         r = 10
 
--- res = (replicate 1000 2) |> map (show) |> foldl fullMult 1
+res = (replicate 1000 2) |> map (show) 
+                         |> foldl (fullMult') "1"
+                         |> map (digitToInt)
+                         |> foldl (+) 0
