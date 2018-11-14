@@ -69,3 +69,5 @@ res = (replicate 1000 2) |> map (show)
                          |> foldl (fullMult') "1"
                          |> map (digitToInt)
                          |> foldl (+) 0
+
+res' = (sum . map (digitToInt) . show) (2 ^ 1000)
