@@ -23,4 +23,7 @@ factorial :: Integer -> Integer
 factorial 0 = 1
 factorial n = n * factorial (n - 1)
 
-result = (factorial 40) `div` (factorial 20 * factorial 20)
+main :: IO()
+main = do
+  let result = (factorial 40) `div` (factorial 20 * factorial 20)
+  print result
