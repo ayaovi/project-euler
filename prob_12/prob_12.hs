@@ -26,7 +26,10 @@ divisors k = divisors' 2 k
                   | otherwise = result
       where result = divisors' (n + 1) k
 
-result = zip [x * (x + 1) `div` 2 | x <- [1..]] [1..] 
+main :: IO()
+main = do
+  let result = zip [x * (x + 1) `div` 2 | x <- [1..]] [1..] 
          |> dropWhile (\(a,b) -> (<) (divisors a |> length) 500)
          |> head 
          |> fst
+  print result
