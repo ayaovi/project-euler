@@ -123,5 +123,8 @@ solve d =
       (acc, rem) = foldr digit ([],0) p'
   in  show rem ++ acc
 
-result = [read z | z <- words str] |> sum |> show |> take 10
-result' = str |> solve |> take 10
+main :: IO()
+main = do
+  let result = [read z | z <- words str] |> sum |> show |> take 10
+  let result' = str |> solve |> take 10
+  print result
