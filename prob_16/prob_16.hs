@@ -65,9 +65,13 @@ halfMult (d1, c1) d2 = (s `mod` r, s `div` r)
   where s = d1 * d2 + c1
         r = 10
 
-res = (replicate 1000 2) |> map (show) 
+main :: IO()
+main = do
+  let res = (replicate 1000 2) |> map (show) 
                          |> foldl (fullMult') "1"
                          |> map (digitToInt)
                          |> foldl (+) 0
-
-res' = (sum . map (digitToInt) . show) (2 ^ 1000)
+                         
+  let res' = (sum . map (digitToInt) . show) (2 ^ 1000)
+  
+  print res'
