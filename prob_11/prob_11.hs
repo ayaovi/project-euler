@@ -76,8 +76,10 @@ quad_down_only :: [Int] -> [Int] -> [[Int]]
 quad_down_only xs ys = xs |> map (\x -> [ys !! x, ys !! (x + 20), ys !! (x + 40), ys !! (x + 60)])
 
 -- result = groupBy (\(x, i) (y, j) -> j > 1 && (/=) (j `mod` 20) 1) $ zip (map (\x -> read x :: Int) x) [1..length x]
-x = (words grid) |> map (\x -> read x :: Int)
 
-quads = [quad_all_direction all_direction, quad_right_only right_only, quad_down_only down_only] |> map (\f -> f x) |> concat
-
-result = quads |> map (\xs -> foldl (*) 1 xs) |> maximum
+main :: IO()
+main = do
+  let x = (words grid) |> map (\x -> read x :: Int)
+  let quads = [quad_all_direction all_direction, quad_right_only right_only, quad_down_only down_only] |> map (\f -> f x) |> concat
+  let result = quads |> map (\xs -> foldl (*) 1 xs) |> maximum
+  print result
