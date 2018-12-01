@@ -9,5 +9,8 @@
 is_pythagorean_triplet :: Int -> Int -> Int -> Bool
 is_pythagorean_triplet x y z = x * x + y * y == z * z 
 
-ab = head $ dropWhile (\(x, y) -> not $ is_pythagorean_triplet x y (1000 - x - y)) $ concat $ map (\x -> map (\y -> (x, y)) [1..1000]) [1..1000]
-result = fst ab * snd ab * (1000 - fst ab - snd ab)
+main :: IO()
+main = do
+  let ab = head $ dropWhile (\(x, y) -> not $ is_pythagorean_triplet x y (1000 - x - y)) $ concat $ map (\x -> map (\y -> (x, y)) [1..1000]) [1..1000]
+  let result = fst ab * snd ab * (1000 - fst ab - snd ab)
+  print result
