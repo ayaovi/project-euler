@@ -22,4 +22,7 @@ dfof xs = nubBy (\x y -> ((==) (fst x) (fst y)) && ((>=) (snd x) (snd y))) xs
 sfbo :: [(Int, Int)] -> [(Int, Int)] -- sfbo: sort factors by occurence.
 sfbo xs = sortBy (\(_,a) (_,b) -> compare b a) xs
 
-result = foldl (\x (y, z) -> x * round (fromIntegral y ** fromIntegral z)) 1 $ dfof $ sfbo $ concat $ map (\x -> pfc (pf x)) [20, 19..2]
+main :: IO()
+main = do
+  let result = foldl (\x (y, z) -> x * round (fromIntegral y ** fromIntegral z)) 1 $ dfof $ sfbo $ concat $ map (\x -> pfc (pf x)) [20, 19..2]
+  print result
