@@ -53,4 +53,7 @@ substring xs (i, j) = take ((-) j i) $ drop i xs
 poad :: String -> Int -- poad: product of all digits
 poad xs = foldl (*) 1 $ map (\x -> digitToInt x) xs
 
-result = last $ sort $ map (\x -> poad x) $ map (\x -> substring digits (x, x + 13)) [0..1000 - 13]
+main :: IO()
+main = do
+  let result = last $ sort $ map (\x -> poad x) $ map (\x -> substring digits (x, x + 13)) [0..1000 - 13]
+  print result
