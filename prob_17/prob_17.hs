@@ -7,11 +7,18 @@
 
 (|>) = flip ($)
 
-multiplesOfTen = ["", " ten", " twenty", " thirty", " forty", " fifty", " sixty", " seventy", " eighty", " ninety"]
-others = ["", " one", " two", " three", " four", " five", " six", " seven", " eight", " nine", " ten", " eleven", " twelve", " thirteen", " fourteen", " fifteen", " sixteen", " seventeen", " eighteen", " nineteen"]
+multiplesOfTen = ["", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+oneToTwenty = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 
-convert :: Int -> String
-convert x 
+convert :: Int -> Bool -> String
+convert x f
   | x == 0 = ""
-  | x `mod` 100 < 20 = (convert (x `div` 100)) ++ others !! (x `mod` 100)
-  | otherwise = (convert (x `div` 10)) ++ multiplesOfTen !! (x `mod` 10) ++ others !! (x `mod` 10)
+  | x >= 1000 = (oneToTwenty !! (x `div` 1000)) ++ "thousand" ++ (if (x `mod` 1000) > 100 then convert (x `mod` 1000) False else convert (x `mod` 1000) True)
+  | x >= 100 = (oneToTwenty !! (x `div` 100)) ++ "hundred" ++ (convert (x `mod` 100) True)
+  | x `mod` 100 < 20 = (if f then "and" else "") ++ (convert (x `div` 100) False) ++ oneToTwenty !! (x `mod` 100)
+  | otherwise = (if f then "and" else "") ++ multiplesOfTen !! (x `div` 10) ++ oneToTwenty !! (x `mod` 10)
+
+main :: IO()
+main = do
+  let x = [convert i False | i <- [1..1000]] |> foldl (++) "" |> length
+  print x
